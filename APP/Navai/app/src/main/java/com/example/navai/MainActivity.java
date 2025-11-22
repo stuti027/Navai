@@ -1,4 +1,3 @@
-// MainActivity.java (MODIFIED)
 package com.example.navai;
 
 import android.content.Intent;
@@ -7,6 +6,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton; // Added for the menu icon
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,19 +19,30 @@ public class MainActivity extends AppCompatActivity {
     private AutoCompleteTextView sourceAutoComplete;
     private AutoCompleteTextView destinationAutoComplete;
     private AutoCompleteTextView vehicleTypeAutoComplete;
+    private ImageButton menuButton; // Reference to the new menu button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Assuming your activity_main.xml uses these IDs/Widgets now
+        // Fetching views
         sourceAutoComplete = findViewById(R.id.sourceAutoComplete);
         destinationAutoComplete = findViewById(R.id.destinationAutoComplete);
         vehicleTypeAutoComplete = findViewById(R.id.vehicleTypeAutoComplete);
         Button confirmButton = findViewById(R.id.confirmButton);
+        menuButton = findViewById(R.id.menuButton); // Initialize the new menu button
 
-        // --- 1. Vehicle Type Adapter (Original) ---
+        // --- New Menu Button Click Listener ---
+        menuButton.setOnClickListener(v -> {
+            // Since we only have one item ("Report") for now, we navigate directly.
+            // For more items, you would show a popup menu here.
+            Intent reportIntent = new Intent(MainActivity.this, ReportActivity.class);
+            startActivity(reportIntent);
+        });
+
+
+        // --- 1. Vehicle Type Adapter ---
         String[] vehicleTypes = new String[]{"Sedan", "SUV", "Truck", "Bike"};
         ArrayAdapter<String> vehicleAdapter = new ArrayAdapter<>(
                 this,
@@ -42,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // --- 2. Location Suggestions Adapter (From GeoJSON Utility) ---
-        // Load the human-readable location names (Keys from the utility map)
+        // Ensure GeoJsonParserUtility is implemented and works (from previous steps)
         List<String> locationNames = new ArrayList<>(
                 GeoJsonParserUtility.loadLocationCoordinates(this).keySet()
         );
@@ -56,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         // Apply Location Adapter to Source and Destination
         sourceAutoComplete.setAdapter(locationAdapter);
         destinationAutoComplete.setAdapter(locationAdapter);
-        sourceAutoComplete.setThreshold(1); // Start suggesting after 1 character
+        sourceAutoComplete.setThreshold(1);
         destinationAutoComplete.setThreshold(1);
 
 
@@ -71,12 +82,18 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Intent intent = new Intent(MainActivity.this, MapViewActivity.class);
 
+                // Optional: Basic validation to ensure the name is in the lookup map
+                if (!GeoJsonParserUtility.loadLocationCoordinates(MainActivity.this).containsKey(source) ||
+                        !GeoJsonParserUtility.loadLocationCoordinates(MainActivity.this).containsKey(destination)) {
+                    Toast.makeText(MainActivity.this, "Source or destination is not a recognized location.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Intent intent = new Intent(MainActivity.this, MapViewActivity.class);
                 intent.putExtra("SOURCE_KEY", source);
                 intent.putExtra("DESTINATION_KEY", destination);
                 intent.putExtra("VEHICLE_TYPE_KEY", vehicleType);
-
                 startActivity(intent);
             }
         });

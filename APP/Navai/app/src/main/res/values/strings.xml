@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Navai</string>
+    <string name="confirm">Confirm and View Map</string>
+    <string name="plan_your_route">Plan Your Route</string>
+    <string name="source_location">Source Location</string>
+    <string name="destination_location">Destination Location</string>
+    <string name="vehicle_type">Vehicle Type</string>
+    <string name="confirm_and_view_map">Confirm and View Map</string>
+    <string name="title_activity_maps">MapsActivity</string>
+</resources>

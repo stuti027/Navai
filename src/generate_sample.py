@@ -5,9 +5,7 @@ from pathlib import Path
 def generate_sample_data(n=5000, out_file="data/sample_data.csv"):
     rng = np.random.default_rng(42)
     
-    # --- CONFIGURATION ---
     nodes = ["A", "B", "C", "D", "E"]
-    # Updated to match App/API inputs
     road_types = ["highway", "urban", "rural"]
     vehicle_types = ["sedan", "suv", "truck", "bike"] 
     events = ["none", "none", "none", "procession", "vip_movement"]
@@ -32,14 +30,11 @@ def generate_sample_data(n=5000, out_file="data/sample_data.csv"):
         vehicle_type = rng.choice(vehicle_types)
         historical_congestion = rng.uniform(0, 1)
         
-        # Logic: Accidents cause massive delays
         accident_prob = [0.05, 0.95] # 5% chance of accident
         accident = rng.choice(["yes", "no"], p=accident_prob)
         
         potholes = int(rng.integers(0, 11))
 
-        # --- LOGIC FOR TARGET VARIABLES ---
-        # 1. Base Congestion Calculation
         acc_factor = 0.8 if accident == "yes" else 0.0
         congestion = (
             0.4 * (1 / road_quality) +
@@ -50,14 +45,12 @@ def generate_sample_data(n=5000, out_file="data/sample_data.csv"):
         )
         congestion = float(np.clip(congestion, 0, 1))
 
-        # 2. Weight (Cost) Calculation
-        # Cost = Distance (base) + Time penalty (Congestion) + Monetary (Tolls)
         weight = (
             0.3 * distance +
             5 * (1 / road_quality) +
             3 * (1 - speed_limit / 120) +
             2 * tolls +
-            10 * congestion +  # High penalty for congestion
+            10 * congestion +  
             (10 if accident == "yes" else 0) +
             potholes * 0.2
         )

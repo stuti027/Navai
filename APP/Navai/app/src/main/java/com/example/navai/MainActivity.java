@@ -47,9 +47,13 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                    Intent intent = new Intent(MainActivity.this, MapViewActivity.class);
 
+                    intent.putExtra("SOURCE_KEY", source);
+                    intent.putExtra("DESTINATION_KEY", destination);
+                    intent.putExtra("VEHICLE_TYPE_KEY", vehicleType);
 
-                // Navigate to MapViewActivity
+                    startActivity(intent);
             }
         });
     }
